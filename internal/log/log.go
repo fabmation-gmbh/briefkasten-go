@@ -97,8 +97,6 @@ func newDevelopmentConfig(lvl zap.AtomicLevel) zap.Config {
 // decodeLogLevel decodes a "log level string" into the zap.AtomicLevel.
 func decodeLogLevel(l string) zapcore.Level {
 	switch strings.ToLower(l) {
-	case "trace":
-		return zapcore.TraceLevel
 	case "debug":
 		return zapcore.DebugLevel
 	case "info":
@@ -129,25 +127,6 @@ var traceProtocol *zap.Logger
 // to the child don't affect the parent, and vice versa.
 func With(fields ...zap.Field) *zap.Logger {
 	return logger.With(fields...)
-}
-
-// Trace logs a message at TraceLevel. The message includes any fields passed
-// at the log site, as well as any fields accumulated on the logger.
-func Trace(msg string, fields ...zap.Field) {
-	logger.Trace(msg, fields...)
-}
-
-// TraceProtocol logs a protocol message at TraceLevel.
-// The message includes any fields passed at the log site, as well as any fields
-// accumulated on the logger.
-// Additionally, a new field called `trace_type` holding `protocol` as value will
-// be passed to the logger.
-func TraceProtocol(msg string, fields ...zap.Field) {
-	if traceProtocol == nil {
-		traceProtocol = With(zap.String("trace_type", "protocol"))
-	}
-
-	traceProtocol.Trace(msg, fields...)
 }
 
 // Debug logs a message at DebugLevel. The message includes any fields passed
@@ -199,10 +178,4 @@ func Panic(msg string, fields ...zap.Field) {
 // disabled.
 func Fatal(msg string, fields ...zap.Field) {
 	logger.Fatal(msg, fields...)
-}
-
-// Audit logs a message at AuditLevel. The message includes any fields passed
-// at the log site, as well as any fields accumulated on the logger.
-func Audit(msg string, fields ...zap.Field) {
-	logger.Audit(msg, fields...)
 }

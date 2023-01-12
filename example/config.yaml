@@ -1,0 +1,10 @@
+general:
+  listen: "127.0.0.1:8080"
+  environment: "development"
+
+debug:
+  enable_sql_debug: true
+  enable_tracing: false
+
+db:
+  uri: "postgres://postgres:postgres@127.0.0.1:5432/postgres?sslmode=disable"
