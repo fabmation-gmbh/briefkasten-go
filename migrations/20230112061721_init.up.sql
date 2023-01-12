@@ -20,7 +20,7 @@ CREATE UNIQUE INDEX unique_user_on_email
 CREATE TABLE category (
   id UUID NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  user_id  UUID NOT NULL REFERENCES user_account (id),
+  user_id  UUID NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT
 );
@@ -32,7 +32,7 @@ CREATE UNIQUE INDEX unique_category_on_user_id_and_name
 CREATE TABLE bookmark (
   id UUID NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  user_id UUID NOT NULL REFERENCES user_account (id),
+  user_id UUID NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
   category_id UUID NOT NULL REFERENCES category (id),
   url TEXT NOT NULL,
   image TEXT,
@@ -46,7 +46,7 @@ CREATE UNIQUE INDEX unique_bookmark_on_user_id_and_url
 CREATE TABLE tag (
   id UUID NOT NULL PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  user_id UUID NOT NULL REFERENCES user_account (id),
+  user_id UUID NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   description TEXT,
   emoji TEXT
@@ -57,8 +57,8 @@ CREATE UNIQUE INDEX unique_tag_on_user_id_and_name
 
 
 CREATE TABLE tag_on_bookmark (
-  bookmark_id  UUID NOT NULL REFERENCES bookmark (id),
-  tag_id UUID NOT NULL REFERENCES tag (id),
+  bookmark_id  UUID NOT NULL REFERENCES bookmark (id) ON DELETE CASCADE,
+  tag_id UUID NOT NULL REFERENCES tag (id) ON DELETE CASCADE,
 
   constraint pk_tag_on_bookmark
     PRIMARY KEY (bookmark_id, tag_id)
@@ -68,7 +68,7 @@ CREATE TABLE tag_on_bookmark (
 -- NOTE: We may move this table completely to redis!
 CREATE TABLE session (
   token TEXT NOT NULL,
-  user_id UUID NOT NULL REFERENCES user_account (id),
+  user_id UUID NOT NULL REFERENCES user_account (id) ON DELETE CASCADE,
   expires TIMESTAMPTZ NOT NULL,
   raw_data TEXT NOT NULL,
 

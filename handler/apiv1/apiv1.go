@@ -23,4 +23,9 @@ func AddApiV1(r fiber.Router) {
 		SigningMethod: config.C.General.JWT.SigningMethod,
 		SigningKey:    []byte(config.C.General.JWT.SigningKey),
 	}))
+
+	r.Get("/users/:id/tags", GetTags)
+	r.Delete("/users/:id/tags/:tag_id", DeleteTag)
+	r.Put("/users/:id/tags/:tag_id", UpdateTag)
+	r.Post("/users/:id/tags", CreateTag)
 }

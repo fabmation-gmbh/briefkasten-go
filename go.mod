@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/gofiber/jwt/v3 v3.3.4
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/google/uuid v1.1.2
 	github.com/knadh/koanf v1.4.5
