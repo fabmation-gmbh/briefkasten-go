@@ -70,6 +70,7 @@ CREATE TABLE session (
   token TEXT NOT NULL,
   user_id UUID NOT NULL REFERENCES user_account (id),
   expires TIMESTAMPTZ NOT NULL,
+  raw_data TEXT NOT NULL,
 
   constraint pk_session
     PRIMARY KEY (token, user_id)

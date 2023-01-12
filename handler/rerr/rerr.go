@@ -23,7 +23,6 @@ const (
 	ecRequestMalformed    = ErrorCode(100)
 	ecInternalServerError = ErrorCode(101)
 	ecUnauthenticated     = ErrorCode(102)
-	ecAccessTokenExpired  = ErrorCode(103)
 )
 
 // Error is an rerr (request/ REST API) error.

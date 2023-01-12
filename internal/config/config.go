@@ -29,6 +29,13 @@ type Config struct {
 		CompressionLevel uint `koanf:"compression_level"`
 		// SecureCookie defines if cookies shall be marked as "secure".
 		SecureCookie bool `koanf:"secure_cookie"`
+		// JWT holds the JWT configuration.
+		JWT struct {
+			// SigningMethod is the method used to sign/ check JWT tokens.
+			SigningMethod string `koanf:"signing_method"`
+			// SigningKey is the private key to sign JWT tokens.
+			SigningKey string `koanf:"signing_key"`
+		} `koanf:"jwt"`
 	} `koanf:"general"`
 	Debug struct {
 		EnableSQLDebug bool `koanf:"enable_sql_debug"`
@@ -43,6 +50,23 @@ type Config struct {
 		// URI is the connection URI.
 		URI string `koanf:"uri"`
 	} `koanf:"db"`
+	// Redis holds the redis specific configuration parameter.
+	Redis struct {
+		// Network defines the communication type.
+		Network string `koanf:"network"`
+		// Address is the host and port of the redis servers.
+		Address []string `koanf:"address"`
+		// Password is the authentication password.
+		// It can be left blank.
+		Password string `koanf:"password"`
+		// DB is the database number which should be used.
+		DB int `koanf:"db"`
+	} `koanf:"redis"`
+	// OAuth2 holds the oauth2 information used for the dev portal.
+	OAuth2 struct {
+		// Endpoint is the endpoint/ URL of this application.
+		Endpoint string `koanf:"endpoint"`
+	} `koanf:"oauth"`
 }
 
 // C holds the current configuration.
@@ -73,9 +97,15 @@ func LoadConfig(path string) error {
 		return errors.Wrap(err, "unable to parse configuration file")
 	}
 
+	if C.General.JWT.SigningKey == "" {
+		return errors.New("JWT signing key not provided")
+	}
+
 	return nil
 }
 
 func loadDefaultValues() {
-	k.Load(confmap.Provider(map[string]any{}, "."), nil)
+	k.Load(confmap.Provider(map[string]any{
+		"general.jwt.signing_method": "HS256",
+	}, "."), nil)
 }

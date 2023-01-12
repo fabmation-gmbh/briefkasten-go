@@ -7,20 +7,25 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/rueian/rueidis"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
+	"go.uber.org/zap"
 
 	"github.com/fabmation-gmbh/briefkasten-go/handler/apiv1"
 	"github.com/fabmation-gmbh/briefkasten-go/handler/ftracer"
 	"github.com/fabmation-gmbh/briefkasten-go/handler/middleware"
 	"github.com/fabmation-gmbh/briefkasten-go/internal/config"
 	"github.com/fabmation-gmbh/briefkasten-go/internal/log"
+	"github.com/fabmation-gmbh/briefkasten-go/internal/oauth"
+	"github.com/fabmation-gmbh/briefkasten-go/internal/redis"
 	"github.com/fabmation-gmbh/briefkasten-go/models"
 )
 
 var (
 	app    *fiber.App
 	tracer trace.Tracer
+	rdb    rueidis.Client
 )
 
 // StartServer will create a new mux router and listen on the configured port.
@@ -31,6 +36,12 @@ func StartServer() error {
 	// establish database connection
 	log.Info("Connect to database")
 	models.Connect()
+
+	log.Debug("Initialize OAuth2 Client")
+	oauth.Init()
+	if err := Connect(); err != nil {
+		log.Fatal("Unable to connect to redis", zap.Error(err))
+	}
 
 	log.Debug("Initializing router")
 
@@ -105,4 +116,15 @@ func untilError(f ...func() error) error {
 	}
 
 	return nil
+}
+
+// Connect will connect to the Redis DB
+func Connect() (err error) {
+	rdb, err = rueidis.NewClient(rueidis.ClientOption{
+		InitAddress: config.C.Redis.Address,
+	})
+
+	redis.Connect(rdb)
+
+	return err
 }
